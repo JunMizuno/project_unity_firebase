@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "763808065154",
+    "firebase_url": "https://testproject-e2271.firebaseio.com",
+    "project_id": "testproject-e2271",
+    "storage_bucket": "testproject-e2271.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:763808065154:android:b9d9b2188d99b4a7",
+        "android_client_info": {
+          "package_name": "jp.co.mizuno_firebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "763808065154-m1e8a9fhm836gqg78hvgfn3g88mj2mal.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjgc39IsOF9nRyuMc8o6ivx6O2F73nkT8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
