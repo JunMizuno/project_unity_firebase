@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:763808065154:android:b9d9b2188d99b4a7",
+        "mobilesdk_app_id": "1:763808065154:android:7776f876d6c673d4",
         "android_client_info": {
-          "package_name": "jp.co.mizuno_firebase"
+          "package_name": "jp.co.mizuno.firebase"
         }
       },
       "oauth_client": [
