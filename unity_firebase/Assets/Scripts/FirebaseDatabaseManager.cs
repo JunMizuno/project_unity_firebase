@@ -94,6 +94,8 @@ public class FirebaseDatabaseManager : MonoBehaviour
                 DataSnapshot snapShot = task.Result;
 
                 // jsonデータを取得する場合
+                // @memo. Dictionaryを使用する場合は以下の様な記述で取得可能
+                // @memo. Dictionary<string, object> itemDic = Json.Deserialize(itemJson) as Dictionary<string, object>;
                 string json = snapShot.GetRawJsonValue();
                 Debug.Log("<color=yellow>" + "json:" + json + "</color>");
                 UserData userData = JsonUtility.FromJson<UserData>(json);
