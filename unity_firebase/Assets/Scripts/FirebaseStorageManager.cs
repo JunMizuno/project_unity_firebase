@@ -24,11 +24,9 @@ public class FirebaseStorageManager : MonoBehaviour
         resourcesReference_ = firebaseStorage_.GetReferenceFromUrl("gs://testproject-e2271.appspot.com/Resources");
         dataReference_ = firebaseStorage_.GetReferenceFromUrl("gs://testproject-e2271.appspot.com/Data");
 
-        UploadBytesData();
-        //UploadFiles();
+        //UploadBytesData();
+        UploadFiles();
         //DownloadFiles();
-
-        //var dataTest = data_ref.Child("test.png");
     }
 
     /// <summary>
@@ -94,11 +92,40 @@ public class FirebaseStorageManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// ファイルを指定してアップロードする
     /// </summary>
     private void UploadFiles()
     {
+        // @memo. このパスは格納するディレクトリ名/ファイル名までを指定しないといけない
+        // @memo. 同名ファイルが存在する場合は上書きされる
+        resourcesReference_ = firebaseStorage_.GetReferenceFromUrl("gs://testproject-e2271.appspot.com/Resources/upload_test.png");
 
+        if (dataReference_ == null)
+        {
+            return;
+        }
+
+        // ファイルパスを指定
+        string localFile = "Assets/StreamingAssets/upload_test.png";
+
+        // Upload the file to the path "images/rivers.jpg"
+        resourcesReference_.PutFileAsync(localFile)
+          .ContinueWith((Task<StorageMetadata> task) => {
+              if (task.IsFaulted || task.IsCanceled)
+              {
+                  Debug.Log(task.Exception.ToString());
+              }
+              else
+              {
+                  // Metadata contains file metadata such as size, content-type, and download URL.
+                  StorageMetadata metadata = task.Result;
+
+                  // @memo. 以下、上記関数と同じ
+                  //string download_url = metadata.DownloadUrl.ToString();
+                  Debug.Log("Finished uploading...");
+                  //Debug.Log("download url = " + download_url);
+              }
+          });
     }
 
     /// <summary>
