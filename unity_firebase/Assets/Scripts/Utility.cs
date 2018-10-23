@@ -46,8 +46,18 @@ public class Utility : MonoBehaviour {
             height = height * 256 + readBinary[pos++];
         }
 
-        Texture2D texture = new Texture2D(width, height);
-        texture.LoadImage(readBinary);
+        return CreateTexture2DByBytes(readBinary, width, height);
+    }
+
+    /// <summary>
+    /// バイナリ、幅、高さを指定してTexture2Dを生成
+    /// </summary>
+    /// <returns>The texture2 DB y bytes.</returns>
+    /// <param name="_contents">Contents.</param>
+    public static Texture2D CreateTexture2DByBytes(byte[] _contents, int _width, int _height)
+    {
+        Texture2D texture = new Texture2D(_width, _height);
+        texture.LoadImage(_contents);
 
         return texture;
     }

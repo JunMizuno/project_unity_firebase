@@ -33,7 +33,9 @@ public class FirebaseStorageManager : MonoBehaviour
 
         //UploadBytesData();
         //UploadFiles();
-        DownloadFiles();
+        //DownloadFiles();
+        GetFilesMetaData();
+        //RefreshFilesMetaData();
     }
 
     /// <summary>
@@ -187,7 +189,7 @@ public class FirebaseStorageManager : MonoBehaviour
         // ダウンロード先のパスを指定して対応する場合
         // @memo. 末尾の拡張子までをしっかりと指定すること
         string storagePath = Application.streamingAssetsPath + "/downloaded_test_image.png";
-        Debug.Log("<color=white>" + "storagePath:" + storagePath + "</color>");
+        Debug.Log("<color=yellow>" + "storagePath:" + storagePath + "</color>");
         GetFileFromFirebaseToLocalStorage(pathReference_, storagePath);
         //GetFileFromFirebaseToLocalStorage(gsReference_, storagePath);
         //GetFileFromFirebaseToLocalStorage(httpsReference_, storagePath);
@@ -241,6 +243,92 @@ public class FirebaseStorageManager : MonoBehaviour
             if (!task.IsFaulted && !task.IsCanceled)
             {
                 Debug.Log("File downloaded.");
+            }
+        });
+    }
+
+    /// <summary>
+    /// メモリ配列にダウンロードする
+    /// 最大サイズが決まっているため、あまり実用的ではないかも…
+    /// </summary>
+    /// <param name="_reference">Reference.</param>
+    private void GetFileByBytes(StorageReference _reference)
+    {
+        // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
+        const long maxAllowedSize = 1 * 1024 * 1024;
+        _reference.GetBytesAsync(maxAllowedSize).ContinueWith((Task<byte[]> task) => {
+            if (task.IsFaulted || task.IsCanceled)
+            {
+                Debug.Log(task.Exception.ToString());
+            }
+            else
+            {
+                byte[] fileContents = task.Result;
+                Debug.Log("Finished downloading!");
+            }
+        });
+    }
+
+    /// <summary>
+    /// ファイルのメタデータを取得
+    /// </summary>
+    private void GetFilesMetaData()
+    {
+        if (firebaseStorage_ == null)
+        {
+            return;
+        }
+
+        // ストレージから直接パスを指定してダウンロードする場合
+        pathReference_ = firebaseStorage_.GetReference("Resources/upload_test2.png");
+
+        // GoogleCloudUriを指定してダウンロードする場合
+        gsReference_ = firebaseStorage_.GetReferenceFromUrl("gs://testproject-e2271.appspot.com/Resources/upload_test2.png");
+
+        // URLを指定してダウンロードする場合
+        httpsReference_ = firebaseStorage_.GetReferenceFromUrl("https://firebasestorage.googleapis.com/v0/b/testproject-e2271.appspot.com/o/Resources%2Fupload_test2.png");
+
+        // @memo. それぞれリファレンスを切り替えても同じはず
+        pathReference_.GetMetadataAsync().ContinueWith((Task<StorageMetadata> task) =>
+        {
+            if (!task.IsFaulted && !task.IsCanceled)
+            {
+                StorageMetadata metaData = task.Result;
+                Debug.Log("<color=yellow>" + "CacheControl:" + metaData.CacheControl + " ContentType:" + metaData.ContentType + "</color>");
+            }
+        });
+    }
+
+    /// <summary>
+    /// ファイルのメタデータを更新
+    /// </summary>
+    private void RefreshFilesMetaData()
+    {
+        if (firebaseStorage_ == null)
+        {
+            return;
+        }
+
+        // ストレージから直接パスを指定してダウンロードする場合
+        pathReference_ = firebaseStorage_.GetReference("Resources/upload_test2.png");
+
+        // GoogleCloudUriを指定してダウンロードする場合
+        gsReference_ = firebaseStorage_.GetReferenceFromUrl("gs://testproject-e2271.appspot.com/Resources/upload_test2.png");
+
+        // URLを指定してダウンロードする場合
+        httpsReference_ = firebaseStorage_.GetReferenceFromUrl("https://firebasestorage.googleapis.com/v0/b/testproject-e2271.appspot.com/o/Resources%2Fupload_test2.png");
+
+        var newMetaData = new MetadataChange();
+        newMetaData.CacheControl = "20181023";
+        newMetaData.ContentType = "image/png";
+
+        // 更新処理
+        // @memo. それぞれリファレンスを切り替えても同じはず
+        pathReference_.UpdateMetadataAsync(newMetaData).ContinueWith(task => {
+            if (!task.IsFaulted && !task.IsCanceled)
+            {
+                StorageMetadata metaData = task.Result;
+                Debug.Log("Successed Refresh MetaData!");
             }
         });
     }
