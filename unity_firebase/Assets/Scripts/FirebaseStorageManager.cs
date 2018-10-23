@@ -12,6 +12,9 @@ public class FirebaseStorageManager : MonoBehaviour
     StorageReference parentRefrence_ = null;
     StorageReference resourcesReference_ = null;
     StorageReference dataReference_ = null;
+    StorageReference pathReference_ = null;
+    StorageReference gsReference_ = null;
+    StorageReference httpsReference_ = null;
 
     /// <summary>
     /// 開始時
@@ -22,13 +25,15 @@ public class FirebaseStorageManager : MonoBehaviour
 
         // 参照を作成
         firebaseStorage_ = FirebaseStorage.DefaultInstance;
+
+        // 参照の取得例
         parentRefrence_ = firebaseStorage_.GetReferenceFromUrl("gs://testproject-e2271.appspot.com");
         resourcesReference_ = firebaseStorage_.GetReferenceFromUrl("gs://testproject-e2271.appspot.com/Resources");
         dataReference_ = firebaseStorage_.GetReferenceFromUrl("gs://testproject-e2271.appspot.com/Data");
 
         //UploadBytesData();
-        UploadFiles();
-        //DownloadFiles();
+        //UploadFiles();
+        DownloadFiles();
     }
 
     /// <summary>
@@ -110,7 +115,7 @@ public class FirebaseStorageManager : MonoBehaviour
     {
         // @memo. このパスは格納するディレクトリ名/ファイル名までを指定しないといけない
         // @memo. 同名ファイルが存在する場合は上書きされる
-        resourcesReference_ = firebaseStorage_.GetReferenceFromUrl("gs://testproject-e2271.appspot.com/Resources/upload_test.png");
+        resourcesReference_ = firebaseStorage_.GetReferenceFromUrl("gs://testproject-e2271.appspot.com/Resources/upload_test2.png");
 
         if (dataReference_ == null)
         {
@@ -118,7 +123,7 @@ public class FirebaseStorageManager : MonoBehaviour
         }
 
         // ファイルパスを指定
-        string localFile = "Assets/StreamingAssets/upload_test.png";
+        string localFile = "Assets/StreamingAssets/upload_test2.png";
 
         // メタデータを追加
         // @memo. この形式で記述することで変更できる項目は書き換えが可能
@@ -152,13 +157,91 @@ public class FirebaseStorageManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ファイルを
+    /// ファイルをダウンロードする
     /// </summary>
     private void DownloadFiles()
     {
+        if (firebaseStorage_ == null) 
+        {
+            return;
+        }
 
+        // ストレージから直接パスを指定してダウンロードする場合
+        pathReference_ = firebaseStorage_.GetReference("Resources/upload_test2.png");
 
+        // GoogleCloudUriを指定してダウンロードする場合
+        gsReference_ = firebaseStorage_.GetReferenceFromUrl("gs://testproject-e2271.appspot.com/Resources/upload_test2.png");
 
+        // URLを指定してダウンロードする場合
+        httpsReference_ = firebaseStorage_.GetReferenceFromUrl("https://firebasestorage.googleapis.com/v0/b/testproject-e2271.appspot.com/o/Resources%2Fupload_test2.png");
 
+        // ダウンロードURLを取得して対応する場合
+        // @memo. リファレンスを変えて同じAPIを呼んでも同じURLが返ってくる
+        //string urlByPath = "";
+        //StartCoroutine(GetDownloadUrl(pathReference_, urlByPath));
+        //string urlByUri = "";
+        //StartCoroutine(GetDownloadUrl(gsReference_, urlByUri));
+        //string urlByHttps = "";
+        //StartCoroutine(GetDownloadUrl(httpsReference_, urlByHttps));
+
+        // ダウンロード先のパスを指定して対応する場合
+        // @memo. 末尾の拡張子までをしっかりと指定すること
+        string storagePath = Application.streamingAssetsPath + "/downloaded_test_image.png";
+        Debug.Log("<color=white>" + "storagePath:" + storagePath + "</color>");
+        GetFileFromFirebaseToLocalStorage(pathReference_, storagePath);
+        //GetFileFromFirebaseToLocalStorage(gsReference_, storagePath);
+        //GetFileFromFirebaseToLocalStorage(httpsReference_, storagePath);
+    }
+
+    /// <summary>
+    /// ファイルをダウンロードするためのURLを取得する
+    /// </summary>
+    /// <returns>The download URL.</returns>
+    /// <param name="_reference">Reference.</param>
+    private IEnumerator GetDownloadUrl(StorageReference _reference, string _url)
+    {
+        _reference.GetDownloadUrlAsync().ContinueWith((Task<Uri> task) =>
+        {
+            if (!task.IsFaulted && !task.IsCanceled)
+            {
+                _url = task.Result.ToString();
+            }
+        });
+
+        while (_url == String.Empty)
+        {
+            yield return null;
+        }
+
+        OpenUrl(_url);
+    }
+
+    /// <summary>
+    /// WWW経由などでファイルを開く(ダウンロードする)
+    /// </summary>
+    /// <param name="_url">URL.</param>
+    private void OpenUrl(string _url)
+    {
+        Debug.Log("<color=red>" + "Download URL:" + _url + "</color>");
+    }
+
+    /// <summary>
+    /// 保存先を指定してファイルをダウンロードする
+    /// </summary>
+    /// <param name="_reference">Reference.</param>
+    /// <param name="_storagePath">Storage path.</param>
+    private void GetFileFromFirebaseToLocalStorage(StorageReference _reference, string _storagePath)
+    {
+        // リスナー
+        var progressFunc = new StorageProgress<DownloadState>((DownloadState state) => {
+            Debug.Log(String.Format("Progress: {0} of {1} bytes transferred.", state.BytesTransferred, state.TotalByteCount));
+        });
+
+        _reference.GetFileAsync(_storagePath, progressFunc, CancellationToken.None).ContinueWith(task => {
+            if (!task.IsFaulted && !task.IsCanceled)
+            {
+                Debug.Log("File downloaded.");
+            }
+        });
     }
 }
