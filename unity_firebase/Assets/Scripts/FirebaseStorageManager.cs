@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
 using Firebase.Storage;
+using System;
+using System.Threading;
 
 public class FirebaseStorageManager : MonoBehaviour 
 {
@@ -69,26 +71,36 @@ public class FirebaseStorageManager : MonoBehaviour
         // メモリ内のデータを取得
         var bytesData = Utility.CreateBytesByPngFile("Assets/StreamingAssets/upload_test.png");
 
-        // Upload the file to the path "images/rivers.jpg"
-        dataReference_.PutBytesAsync(bytesData)
-          .ContinueWith((Task<StorageMetadata> task) => {
-              if (task.IsFaulted || task.IsCanceled)
-              {
-                  Debug.Log(task.Exception.ToString());
-              }
-              else
-              {
-                  // Metadata contains file metadata such as size, content-type, and download URL.
-                  StorageMetadata metadata = task.Result;
+        // メタデータを追加
+        // @memo. この形式で記述することで変更できる項目は書き換えが可能
+        //var newMetaData = new MetadataChange();
+        //newMetaData.ContentType = "png";
+        //newMetaData.CacheControl = "0001";
 
-                  // @memo. 以下のURLはうまく取得できていない模様…
-                  // @memo. コンソール上ではURLを取得でき、そのURLからダウンロードまでを確認できた
-                  //var download_url = dataReference_.GetDownloadUrlAsync();
-                  Debug.Log("Finished uploading...");
-                  //Debug.Log("download url = " + download_url);
-              }
-          });
+        // アップロード処理
+        // アップロード中のリスナーを追加
+        var task = dataReference_.PutBytesAsync(bytesData, null, new StorageProgress<UploadState>(state => {
+            Debug.Log("SessionUri:" + state.UploadSessionUri);
+            Debug.Log(String.Format("Progress: {0} of {1} bytes transferred.", state.BytesTransferred, state.TotalByteCount));
+        }), CancellationToken.None, null);
 
+        task.ContinueWith((Task<StorageMetadata> resultTask) => {
+            if (resultTask.IsFaulted || resultTask.IsCanceled)
+            {
+                Debug.Log(resultTask.Exception.ToString());
+            }
+            else
+            {
+                // Metadata contains file metadata such as size, content-type, and download URL.
+                StorageMetadata metadata = resultTask.Result;
+
+                // @memo. 以下のURLはうまく取得できていない模様…
+                // @memo. コンソール上ではURLを取得でき、そのURLからダウンロードまでを確認できた
+                //var download_url = dataReference_.GetDownloadUrlAsync();
+                Debug.Log("Finished uploading...");
+                //Debug.Log("download url = " + download_url);
+            }
+        });
     }
 
     /// <summary>
@@ -108,31 +120,45 @@ public class FirebaseStorageManager : MonoBehaviour
         // ファイルパスを指定
         string localFile = "Assets/StreamingAssets/upload_test.png";
 
-        // Upload the file to the path "images/rivers.jpg"
-        resourcesReference_.PutFileAsync(localFile)
-          .ContinueWith((Task<StorageMetadata> task) => {
-              if (task.IsFaulted || task.IsCanceled)
-              {
-                  Debug.Log(task.Exception.ToString());
-              }
-              else
-              {
-                  // Metadata contains file metadata such as size, content-type, and download URL.
-                  StorageMetadata metadata = task.Result;
+        // メタデータを追加
+        // @memo. この形式で記述することで変更できる項目は書き換えが可能
+        //var newMetaData = new MetadataChange();
+        //newMetaData.ContentType = "png";
+        //newMetaData.CacheControl = "0001";
 
-                  // @memo. 以下、上記関数と同じ
-                  //string download_url = metadata.DownloadUrl.ToString();
-                  Debug.Log("Finished uploading...");
-                  //Debug.Log("download url = " + download_url);
-              }
-          });
+        // アップロード処理
+        // アップロード中のリスナーを追加
+        var task = resourcesReference_.PutFileAsync(localFile, null, new StorageProgress<UploadState>(state => {
+            Debug.Log("SessionUri:" + state.UploadSessionUri);
+            Debug.Log(String.Format("Progress: {0} of {1} bytes transferred.", state.BytesTransferred, state.TotalByteCount));
+        }), CancellationToken.None, null);
+
+        task.ContinueWith((Task<StorageMetadata> resultTask) => {
+            if (resultTask.IsFaulted || resultTask.IsCanceled)
+            {
+                Debug.Log(resultTask.Exception.ToString());
+            }
+            else
+            {
+                // Metadata contains file metadata such as size, content-type, and download URL.
+                StorageMetadata metadata = resultTask.Result;
+
+                // @memo. 以下、上記関数と同じ
+                //string download_url = metadata.DownloadUrl.ToString();
+                Debug.Log("Finished uploading...");
+                //Debug.Log("download url = " + download_url);
+            }
+        });
     }
 
     /// <summary>
-    /// 
+    /// ファイルを
     /// </summary>
     private void DownloadFiles()
     {
+
+
+
 
     }
 }
