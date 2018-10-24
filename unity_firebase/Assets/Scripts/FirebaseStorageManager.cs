@@ -32,10 +32,11 @@ public class FirebaseStorageManager : MonoBehaviour
         dataReference_ = firebaseStorage_.GetReferenceFromUrl("gs://testproject-e2271.appspot.com/Data");
 
         //UploadBytesData();
-        //UploadFiles();
+        UploadFiles();
         //DownloadFiles();
-        GetFilesMetaData();
+        //GetFilesMetaData();
         //RefreshFilesMetaData();
+        //DeleteFileFromFirebaseStorage();
     }
 
     /// <summary>
@@ -190,9 +191,9 @@ public class FirebaseStorageManager : MonoBehaviour
         // @memo. 末尾の拡張子までをしっかりと指定すること
         string storagePath = Application.streamingAssetsPath + "/downloaded_test_image.png";
         Debug.Log("<color=yellow>" + "storagePath:" + storagePath + "</color>");
-        GetFileFromFirebaseToLocalStorage(pathReference_, storagePath);
-        //GetFileFromFirebaseToLocalStorage(gsReference_, storagePath);
-        //GetFileFromFirebaseToLocalStorage(httpsReference_, storagePath);
+        GetFileFromFirebaseStorageToLocalStorage(pathReference_, storagePath);
+        //GetFileFromFirebaseStorageToLocalStorag(gsReference_, storagePath);
+        //GetFileFromFirebaseStorageToLocalStorag(httpsReference_, storagePath);
     }
 
     /// <summary>
@@ -232,7 +233,7 @@ public class FirebaseStorageManager : MonoBehaviour
     /// </summary>
     /// <param name="_reference">Reference.</param>
     /// <param name="_storagePath">Storage path.</param>
-    private void GetFileFromFirebaseToLocalStorage(StorageReference _reference, string _storagePath)
+    private void GetFileFromFirebaseStorageToLocalStorage(StorageReference _reference, string _storagePath)
     {
         // リスナー
         var progressFunc = new StorageProgress<DownloadState>((DownloadState state) => {
@@ -318,6 +319,8 @@ public class FirebaseStorageManager : MonoBehaviour
         // URLを指定してダウンロードする場合
         httpsReference_ = firebaseStorage_.GetReferenceFromUrl("https://firebasestorage.googleapis.com/v0/b/testproject-e2271.appspot.com/o/Resources%2Fupload_test2.png");
 
+        // メタデータを設定
+        // 既存のメタデータを削除する場合は空文字を代入すれば可能(ただし編集可能なもののみ)
         var newMetaData = new MetadataChange();
         newMetaData.CacheControl = "20181023";
         newMetaData.ContentType = "image/png";
@@ -329,6 +332,38 @@ public class FirebaseStorageManager : MonoBehaviour
             {
                 StorageMetadata metaData = task.Result;
                 Debug.Log("Successed Refresh MetaData!");
+            }
+        });
+    }
+
+    /// <summary>
+    /// ストレージ上のファイルを削除
+    /// </summary>
+    private void DeleteFileFromFirebaseStorage()
+    {
+        if (firebaseStorage_ == null)
+        {
+            return;
+        }
+
+        // ストレージから直接パスを指定してダウンロードする場合
+        pathReference_ = firebaseStorage_.GetReference("Resources/upload_test2.png");
+
+        // GoogleCloudUriを指定してダウンロードする場合
+        gsReference_ = firebaseStorage_.GetReferenceFromUrl("gs://testproject-e2271.appspot.com/Resources/upload_test2.png");
+
+        // URLを指定してダウンロードする場合
+        httpsReference_ = firebaseStorage_.GetReferenceFromUrl("https://firebasestorage.googleapis.com/v0/b/testproject-e2271.appspot.com/o/Resources%2Fupload_test2.png");
+
+        // @memo. それぞれリファレンスを切り替えても同じはず
+        pathReference_.DeleteAsync().ContinueWith(task => {
+            if (task.IsCompleted)
+            {
+                Debug.Log("File deleted successfully.");
+            }
+            else
+            {
+                Debug.Log("error file is not deleted");
             }
         });
     }
