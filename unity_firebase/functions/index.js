@@ -7,25 +7,64 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 // @memo. 以下の様な形で処理が実装できる
+// @memo. コンソール上から削除したい場合はGoogleCloudPlatformから削除できる
 
-// @memo. https://us-central1-testproject-e2271.cloudfunctions.net/selectUserIndex?text=引数
-// @memo. ブラウザで叩くとres.send()の内容が表示される
-exports.selectUserIndex = functions.https.onRequest((req, res) => {
-    const original = req.query.text;
-    console.log('original:', original);
-    if (original == 'develop') {
-        res.send(original);
-    } else if (original == 'real') {
-        res.send(original);
-    } else {
-        res.send(original);
-    }
-    return null;
+/**
+ * @brief ユーザーデータを取得
+ */
+// @memo. https://us-central1-testproject-e2271.cloudfunctions.net/selectUserData?pass=ユーザーID
+exports.selectUserData = functions.https.onRequest((req, res) => {
+    const originalIndex = req.query.pass;
+    var path = "users/" + originalIndex;
+    //console.log('path:' + path);
+
+    admin.database().ref(path).once('value').then(function (snapshot) {
+        var json = snapshot.val();
+        res.send(json);
+        return null;
+    }).catch(error => {
+        console.error(error);
+        res.error(-1);
+    });
 });
 
+/**
+ * @brief ユーザーインデックスを取得
+ */
+// @memo. https://us-central1-testproject-e2271.cloudfunctions.net/selectUserIndex?pass=ユーザーID
+exports.selectUserIndex = functions.https.onRequest((req, res) => {
+    const originalIndex = req.query.pass;
+    var path = "users/" + originalIndex + "/userIndex";
+    //console.log('path:' + path);
 
+    admin.database().ref(path).once('value').then(function (snapshot) {
+        var index = snapshot.val();
+        res.send(index);
+        return null;
+    }).catch(error => {
+        console.error(error);
+        res.error(-1);
+    });
+});
 
+/**
+ * @brief デバイスインデックスを取得
+ */
+// @memo. https://us-central1-testproject-e2271.cloudfunctions.net/selectUserIndex?pass=ユーザーID
+exports.selectDeviceIndex = functions.https.onRequest((req, res) => {
+    const originalIndex = req.query.pass;
+    var path = "users/" + originalIndex + "/deviceIndex";
+    //console.log('path:' + path);
 
+    admin.database().ref(path).once('value').then(function (snapshot) {
+        var index = snapshot.val();
+        res.send(index);
+        return null;
+    }).catch(error => {
+        console.error(error);
+        res.error(-1);
+    });
+});
 
 // expressというnodeモジュールを使用して通信
 // @memo. https://us-central1-testproject-e2271.cloudfunctions.net/addMessage?text=引数

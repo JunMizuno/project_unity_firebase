@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System;
 
 public class Utility : MonoBehaviour {
 
@@ -60,5 +61,55 @@ public class Utility : MonoBehaviour {
         texture.LoadImage(_contents);
 
         return texture;
+    }
+
+    /// <summary>
+    /// 指定されたURIに基づいてそれぞれ処理をする
+    /// </summary>
+    /// <param name="_uri">URI.</param>
+    public static void OpenUri(string _uri)
+    {
+        // @memo. 仕様として「sss://popup」などを定めたとする
+
+        var uri = new Uri(_uri);
+        var scheme = uri.Scheme.ToLower();
+        Debug.Log("<color=magenta>" + "scheme:" + scheme + "</color>");
+        var host = uri.Host.ToLower();
+        Debug.Log("<color=magenta>" + "host:" + host + "</color>");
+
+        switch (scheme) {
+            case "sss":
+                {
+                    switch (host)
+                    {
+                        case "popup":
+                            break;
+
+                        case "scene":
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+                break;
+
+            case "http":
+            case "https":
+                {
+#if UNITY_EDITOR
+                    Application.OpenURL(_uri);
+#elif UNITY_WEBGL
+                    // 別ウインドウで開く
+                    Application.ExternalEval(string.Format("window.open('{0}','_blank')", _uri));
+#else
+                    Application.OpenURL(_uri);
+#endif
+                }
+                break;
+
+            default:
+                break;
+        }
     }
 }
