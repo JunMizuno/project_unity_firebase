@@ -14,10 +14,8 @@ public class FirebaseTotalManager : MonoBehaviour {
     [SerializeField]
     public FirebaseMessageManager messageManager_;
 
-
-
-
-
+    [SerializeField]
+    public FirebaseAuthManager authManager_;
 
     /// <summary>
     /// 起動時
@@ -37,6 +35,8 @@ public class FirebaseTotalManager : MonoBehaviour {
     /// </summary>
 	void Start ()
     {
+        return;
+
         string result = "";
         StartCoroutine(Utility.RequestFirebaseFunction("https://us-central1-testproject-e2271.cloudfunctions.net/selectUserData" + "?pass=test01", r => {
             result = r;
