@@ -81,6 +81,32 @@ exports.addMessage = functions.https.onRequest((req, res) => {
     });
 });
 
+/**
+ * @brief プッシュ通知
+ */
+// @memo.
+exports.pushNotification = functions.https.onRequest((req, res) => {
+    const userIndex = req.body.userIndex;
+    var path = "users/" + userIndex + "/token";
+    //console.log('path:' + path);
+
+    admin.database().ref(path).once('value').then(function (snapshot) {
+        var token = snapshot.val();
+        const payload = {
+            notification: {
+                title: 'プッシュタイトル',
+                body: `プッシュ内容`,
+                icon: 'アイコンアドレス(ex)Storageに上がっているものなど)'
+            }
+        };
+
+        return admin.messaging().sendToDevice(token, payload);
+    }).catch(error => {
+        console.log(error);
+        res.error(-1);
+    });
+});
+
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //

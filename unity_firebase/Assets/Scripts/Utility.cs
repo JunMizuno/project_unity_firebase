@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System;
+using UnityEngine.Networking;
 
 public class Utility : MonoBehaviour {
 
@@ -111,5 +112,33 @@ public class Utility : MonoBehaviour {
             default:
                 break;
         }
+    }
+
+    /// <summary>
+    /// Firebaseに対してリクエストする場合の処理
+    /// </summary>
+    /// <returns>The firebase function.</returns>
+    /// <param name="_uri">URI.</param>
+    public static IEnumerator RequestFirebaseFunction(string _uri, Action<string> _callback)
+    {
+        // UnityWebRequestを生成
+        // @todo. 後々のことを考えるとPostを使用した方が良いはず
+        UnityWebRequest request = UnityWebRequest.Get(_uri);
+
+        yield return request.SendWebRequest();
+
+        if (request.responseCode == -1)
+        {
+            Debug.Log("<color=red>" + "error push notidication" + "</color>");
+            Debug.Log("<color=red>" + request.error + "</color>");
+            yield return false;
+        }
+        else
+        {
+            Debug.Log("<color=magenta>" + "RequestResponseCode:" + request.responseCode + "</color>");
+            Debug.Log("<color=magenta>" + "RequestResult:" + request.downloadHandler.text + "</color>");
+        }
+
+        _callback(request.downloadHandler.text);
     }
 }

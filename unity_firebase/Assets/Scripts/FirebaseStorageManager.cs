@@ -32,7 +32,7 @@ public class FirebaseStorageManager : MonoBehaviour
         dataReference_ = firebaseStorage_.GetReferenceFromUrl("gs://testproject-e2271.appspot.com/Data");
 
         //UploadBytesData();
-        UploadFiles();
+        //UploadFiles();
         //DownloadFiles();
         //GetFilesMetaData();
         //RefreshFilesMetaData();
@@ -65,7 +65,7 @@ public class FirebaseStorageManager : MonoBehaviour
     /// <summary>
     /// メモリ内のバイトデータをアップロード
     /// </summary>
-    private void UploadBytesData()
+    public void UploadBytesData()
     {
         // @memo. このパスは格納するディレクトリ名/ファイル名までを指定しないといけない
         // @memo. 同名ファイルが存在する場合は上書きされる
@@ -114,7 +114,7 @@ public class FirebaseStorageManager : MonoBehaviour
     /// <summary>
     /// ファイルを指定してアップロードする
     /// </summary>
-    private void UploadFiles()
+    public void UploadFiles()
     {
         // @memo. このパスは格納するディレクトリ名/ファイル名までを指定しないといけない
         // @memo. 同名ファイルが存在する場合は上書きされる
@@ -162,7 +162,7 @@ public class FirebaseStorageManager : MonoBehaviour
     /// <summary>
     /// ファイルをダウンロードする
     /// </summary>
-    private void DownloadFiles()
+    public void DownloadFiles()
     {
         if (firebaseStorage_ == null) 
         {
@@ -201,7 +201,7 @@ public class FirebaseStorageManager : MonoBehaviour
     /// </summary>
     /// <returns>The download URL.</returns>
     /// <param name="_reference">Reference.</param>
-    private IEnumerator GetDownloadUrl(StorageReference _reference, string _url)
+    public IEnumerator GetDownloadUrl(StorageReference _reference, string _url)
     {
         _reference.GetDownloadUrlAsync().ContinueWith((Task<Uri> task) =>
         {
@@ -233,7 +233,7 @@ public class FirebaseStorageManager : MonoBehaviour
     /// </summary>
     /// <param name="_reference">Reference.</param>
     /// <param name="_storagePath">Storage path.</param>
-    private void GetFileFromFirebaseStorageToLocalStorage(StorageReference _reference, string _storagePath)
+    public void GetFileFromFirebaseStorageToLocalStorage(StorageReference _reference, string _storagePath)
     {
         // リスナー
         var progressFunc = new StorageProgress<DownloadState>((DownloadState state) => {
@@ -253,7 +253,7 @@ public class FirebaseStorageManager : MonoBehaviour
     /// 最大サイズが決まっているため、あまり実用的ではないかも…
     /// </summary>
     /// <param name="_reference">Reference.</param>
-    private void GetFileByBytes(StorageReference _reference)
+    public void GetFileByBytes(StorageReference _reference)
     {
         // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
         const long maxAllowedSize = 1 * 1024 * 1024;
@@ -273,7 +273,7 @@ public class FirebaseStorageManager : MonoBehaviour
     /// <summary>
     /// ファイルのメタデータを取得
     /// </summary>
-    private void GetFilesMetaData()
+    public void GetFilesMetaData()
     {
         if (firebaseStorage_ == null)
         {
@@ -303,7 +303,7 @@ public class FirebaseStorageManager : MonoBehaviour
     /// <summary>
     /// ファイルのメタデータを更新
     /// </summary>
-    private void RefreshFilesMetaData()
+    public void RefreshFilesMetaData()
     {
         if (firebaseStorage_ == null)
         {
@@ -339,7 +339,7 @@ public class FirebaseStorageManager : MonoBehaviour
     /// <summary>
     /// ストレージ上のファイルを削除
     /// </summary>
-    private void DeleteFileFromFirebaseStorage()
+    public void DeleteFileFromFirebaseStorage()
     {
         if (firebaseStorage_ == null)
         {

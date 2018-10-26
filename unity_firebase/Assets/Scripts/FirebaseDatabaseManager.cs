@@ -24,7 +24,7 @@ public class FirebaseDatabaseManager : MonoBehaviour
 
         // テスト実行
         //WriteUserData();
-        LoadUserData();
+        //LoadUserData();
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class FirebaseDatabaseManager : MonoBehaviour
     /// データベースに書き込む
     /// 20181016現時点でテスト用
     /// </summary>
-    private void WriteUserData()
+    public void WriteUserData()
     {
         // データベースのルートリファレンスを取得
         // 指定した場所までのパスを取得している
@@ -76,7 +76,7 @@ public class FirebaseDatabaseManager : MonoBehaviour
     /// データベースから読み込む
     /// 20181016現時点でテスト用
     /// </summary>
-    private void LoadUserData()
+    public void LoadUserData()
     {
         // データベースのルートリファレンスを取得
         // 指定した場所までのパスを取得している
