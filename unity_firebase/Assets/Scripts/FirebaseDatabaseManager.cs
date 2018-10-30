@@ -28,7 +28,7 @@ public class FirebaseDatabaseManager : MonoBehaviour
     }
 
     /// <summary>
-    /// GooglePlay開発者サービスのバージョン確認
+    /// GooglePlay開発者サービスのバージョン確認(SDKの初期化)
     /// 公式ドキュメントよりそのまま抜粋
     /// </summary>
     private void CheckAvailableGooglePlayDeveloperService()

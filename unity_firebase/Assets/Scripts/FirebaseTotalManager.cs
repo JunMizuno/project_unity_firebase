@@ -35,6 +35,7 @@ public class FirebaseTotalManager : MonoBehaviour {
     /// </summary>
 	void Start ()
     {
+        // @todo. テストで動作しない様にしています
         return;
 
         string result = "";
