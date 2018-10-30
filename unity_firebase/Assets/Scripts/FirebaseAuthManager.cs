@@ -179,6 +179,7 @@ public class FirebaseAuthManager : MonoBehaviour
             }
 
             FirebaseUser newUser = task.Result;
+            // @memo. ここのnewUser.UserIdが作成された一意のユーザーID、これを利用すればこちら側で作成する必要がなくなる
             Debug.LogFormat("Firebase user created successfully: {0} ({1})", newUser.DisplayName, newUser.UserId);
         });
     }
