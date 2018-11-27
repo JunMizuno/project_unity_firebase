@@ -21,6 +21,7 @@ public class FirebaseAuthManager : MonoBehaviour
         // @todo. 流れとしては、CreateUserWithEmailAndPasswordAsyncでエラーが返ればSignInWithEmailAndPasswordAsyncでログイン処理？
         //RegistrationWithUserInfomation("test2@test2.co.jp", "11223344aabbccdd");
         //LoginWithUserInfomation("test2@test2.co.jp", "11223344aabbccdd");
+        //SetAuthUserInformation("test2@test2.co.jp", "11223344aabbccdd");
     }
 
     /// <summary>
@@ -162,6 +163,7 @@ public class FirebaseAuthManager : MonoBehaviour
 
     /// <summary>
     /// ユーザー新規登録
+    /// eメールアドレスとパスワードを使用して登録するタイプ
     /// </summary>
     public void RegistrationWithUserInfomation(string _email, string _password)
     {
@@ -186,15 +188,17 @@ public class FirebaseAuthManager : MonoBehaviour
 
     /// <summary>
     /// ユーザーログイン時
+    /// eメールアドレスとパスワードを使用してログインするタイプ
     /// </summary>
     /// <param name="_email">Email.</param>
     /// <param name="_password">Password.</param>
-    public void LoginWithUserInfomation(string _email, string _password)
+    public void LoginWithUserInfomation(string _email, string _password, Action<string> _callback)
     {
         auth_.SignInWithEmailAndPasswordAsync(_email, _password).ContinueWith(task => {
             if (task.IsCanceled)
             {
                 Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
+                _callback("error");
                 return;
             }
 
@@ -202,16 +206,21 @@ public class FirebaseAuthManager : MonoBehaviour
             if (task.IsFaulted)
             {
                 Debug.LogError("SignInWithEmailAndPasswordAsync encountered an error: " + task.Exception);
+                _callback("error");
                 return;
             }
 
             FirebaseUser newUser = task.Result;
             Debug.LogFormat("User signed in successfully: {0} ({1})", newUser.DisplayName, newUser.UserId);
+
+            _callback(newUser.UserId);
         });
     }
 
     /// <summary>
     /// 認証情報を作成してログイン
+    /// eメールアドレスとパスワードを使用して登録するタイプ
+    /// 別プロバイダから情報取得する？？
     /// </summary>
     /// <param name="_email">Email.</param>
     /// <param name="_password">Password.</param>
@@ -226,6 +235,7 @@ public class FirebaseAuthManager : MonoBehaviour
                 return;
             }
 
+            // @memo. メールやパスワードが異なっていた場合は以下のフラグが有効になる
             if (task.IsFaulted)
             {
                 Debug.LogError("SignInWithCredentialAsync encountered an error: " + task.Exception);

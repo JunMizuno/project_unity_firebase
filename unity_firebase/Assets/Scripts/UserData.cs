@@ -5,11 +5,13 @@ using Project;
 
 public class UserData
 {
+    private const string KEY_OF_USER_INDEX = "user_index"; 
+
     // @memo. privateにするとFirebaseに書き込むためにJson化するとデータが取得できない
     // @memo. 例外的にpublic宣言しています
     // @memo. キャメルケースやパスカルケースもそのままの形でカラム名として登録されます
-    public int userIndex;
-    public int UserIndex
+    public string userIndex;
+    public string UserIndex
     {
         get
         {
@@ -57,9 +59,14 @@ public class UserData
 
     }
 
-    public UserData(int _userIndex)
+    public UserData(string _userIndex, string _userName)
     {
         userIndex = _userIndex;
+        PlayerPrefs.SetString(KEY_OF_USER_INDEX, userIndex);
+
+        isNew = true;
+
+        userName = _userName;
 
 #if UNITY_ANDROID
         deviceIndex = (int)GlobalDefine.Device.Android;

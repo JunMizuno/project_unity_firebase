@@ -3,7 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class FirebaseTotalManager : MonoBehaviour {
-    private FirebaseTotalManager instance_ = null;
+    private static FirebaseTotalManager instance_ = null;
+    public static FirebaseTotalManager Instance
+    {
+        get 
+        {
+            return instance_;
+        }
+    }
 
     [SerializeField]
     public FirebaseDatabaseManager databaseManager_;
@@ -22,7 +29,7 @@ public class FirebaseTotalManager : MonoBehaviour {
     /// </summary>
     private void Awake()
     {
-        if (!instance_) 
+        if (!instance_)
         {
             instance_ = this;
         }

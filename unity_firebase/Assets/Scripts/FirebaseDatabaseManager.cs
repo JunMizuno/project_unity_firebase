@@ -54,22 +54,18 @@ public class FirebaseDatabaseManager : MonoBehaviour
     /// データベースに書き込む
     /// 20181016現時点でテスト用
     /// </summary>
-    public void WriteUserData()
+    public void WriteUserData(UserData _userData)
     {
         // データベースのルートリファレンスを取得
         // 指定した場所までのパスを取得している
         databaseReference_ = FirebaseDatabase.DefaultInstance.GetReference(FIREBASE_PARENT_PATH);
 
-        // @todo. 以下テスト用、実用的でなない
-        var userData = new UserData(3);
-        userData.IsNew = true;
-        userData.UserName = "もう一度やってみたさん";
-        string json = JsonUtility.ToJson(userData);
+        string json = JsonUtility.ToJson(_userData);
 
         // 書き込むデータを設定
         // @memo. 同名のカラムが既に存在していた場合は上書きされる模様
-        // @memo. この場合の「test02」などは仮ユーザーID、正式な場合はUDIUなどを組み合わせて生成させたものを指定することが望ましい
-        databaseReference_.Child("test03").SetRawJsonValueAsync(json);
+        // @memo. 正式な場合はUDIUなどを組み合わせて生成させたものを指定することが望ましい
+        databaseReference_.Child(_userData.userIndex).SetRawJsonValueAsync(json);
     }
 
     /// <summary>

@@ -5,7 +5,8 @@ using System.IO;
 using System;
 using UnityEngine.Networking;
 
-public class Utility : MonoBehaviour {
+public class Utility : MonoBehaviour
+{
 
     /// <summary>
     /// PNG画像からバイナリデータを生成
@@ -78,7 +79,8 @@ public class Utility : MonoBehaviour {
         var host = uri.Host.ToLower();
         Debug.Log("<color=magenta>" + "host:" + host + "</color>");
 
-        switch (scheme) {
+        switch (scheme)
+        {
             case "sss":
                 {
                     switch (host)
@@ -140,5 +142,23 @@ public class Utility : MonoBehaviour {
         }
 
         _callback(request.downloadHandler.text);
+    }
+
+    /// <summary>
+    /// Firebaseに対してユーザーのログインをリクエストする
+    /// </summary>
+    /// <returns>The user login function.</returns>
+    public static IEnumerator RequestFirebaseUserLoginFunction(string _email, string _password, Action<string> _callback)
+    {
+        string userUniqueId = "";
+
+        FirebaseTotalManager.Instance.authManager_.LoginWithUserInfomation(_email, _password, r => {
+            userUniqueId = r;
+            Debug.Log("<color=yellow>" + "リターンで返ってきた文字列:" + r + "</color>");
+        });
+
+        yield return string.IsNullOrEmpty(userUniqueId);
+
+        _callback(userUniqueId);
     }
 }

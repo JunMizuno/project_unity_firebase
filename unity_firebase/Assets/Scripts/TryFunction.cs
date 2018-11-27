@@ -9,13 +9,28 @@ public class TryFunction : MonoBehaviour {
     /// <summary>
     /// 開始時
     /// </summary>
-	void Start () {
-        //Utility.OpenUri("https://www.yahoo.co.jp");
+	void Start () 
+    {
+        // @memo. ログインテスト
 
-        string result = "";
-        StartCoroutine(Utility.RequestFirebaseFunction("https://us-central1-testproject-e2271.cloudfunctions.net/selectUserData" + "?pass=test01", r => {
-            result = r;
-            Debug.Log("<color=cyan>" + result + "</color>");
+        //StartCoroutine(Utility.RequestFirebaseUserLoginFunction("", "", r => {
+        //    Debug.Log("<color=cyan>" + "リターンストリング:" + r + "</color>");
+        //}));
+
+        StartCoroutine(Utility.RequestFirebaseUserLoginFunction("test2@test2.co.jp", "11223344aabbccdd", r => {
+            Debug.Log("<color=cyan>" + "リターンストリング:" + r + "</color>");
         }));
+
+        // @memo. ローカルデータテスト
+        var test = PlayerPrefs.GetString("user_index");
+        Debug.Log("<color=yellow>" + "test:" + test + "</color>");
+        if (string.IsNullOrEmpty(test))
+        {
+            Debug.Log("<color=red>" + "ローカルデータにない" + "</color>");
+        }
+        else
+        {
+            Debug.Log("<color=yellow>" + "保存されている" + "</color>");
+        }
     }
 }
